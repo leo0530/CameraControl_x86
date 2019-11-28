@@ -94,6 +94,6 @@ public:
 	afx_msg void OnBnClickedRadioId8();
 	bool StartCamera(int index,bool bOpen);
 	void StopCamera(int index);
-	void InitRosClient(void);
+//	void InitRosClient(void);
 };
 

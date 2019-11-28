@@ -45,10 +45,7 @@
     <ClInclude Include="CameraControl.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ros.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowsSocket.h">
+    <ClInclude Include="UDPClientClass.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,15 +63,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CameraControl.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="duration.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="time.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowsSocket.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

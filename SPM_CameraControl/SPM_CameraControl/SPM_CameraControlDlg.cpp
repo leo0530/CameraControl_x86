@@ -13,17 +13,17 @@
 
 
 
-geometry_msgs::Twist twist_msg;
-void cmd_vel_angular_callback(const geometry_msgs::Twist & cmd_vel)
-{
-	printf("接收手机cmd_vel %f, %f, %f, %f, %f, %f\n",
-		cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z,
-		cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
-	twist_msg = cmd_vel;
-}
-ros::NodeHandle nh;
-ros::Subscriber < geometry_msgs::Twist > poseSub("cmd_vel", &cmd_vel_angular_callback);
-ros::Publisher cmd_vel_pub("cmd_vel_winpc", &twist_msg);
+//geometry_msgs::Twist twist_msg;
+//void cmd_vel_angular_callback(const geometry_msgs::Twist & cmd_vel)
+//{
+//	printf("接收手机cmd_vel %f, %f, %f, %f, %f, %f\n",
+//		cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z,
+//		cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
+//	twist_msg = cmd_vel;
+//}
+//ros::NodeHandle nh;
+//ros::Subscriber < geometry_msgs::Twist > poseSub("cmd_vel", &cmd_vel_angular_callback);
+//ros::Publisher cmd_vel_pub("cmd_vel_winpc", &twist_msg);
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -245,8 +245,8 @@ BOOL CSPM_CameraControlDlg::OnInitDialog()
 
 	OpenCamera();//打开相机
 
-	InitRosClient();//初始化ros客户端，设置为订阅模式
-	SetTimer(2,100,NULL);
+//	InitRosClient();//初始化ros客户端，设置为订阅模式
+//	SetTimer(2,100,NULL);
 
 	
 
@@ -771,11 +771,11 @@ void CSPM_CameraControlDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		::PostMessage(g_hWnd,WM_UPDATEIMAGE,NULL,NULL);
 	}*/
-	if (nIDEvent == 2)
+	/*if (nIDEvent == 2)
 	{
 		cmd_vel_pub.publish(&twist_msg);
 		nh.spinOnce();
-	}
+	}*/
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -1030,19 +1030,19 @@ void CSPM_CameraControlDlg::StopCamera(int index)
 }
 
 
-void CSPM_CameraControlDlg::InitRosClient(void)//ligy 20191115 add.Ros客户端设置，设置为订阅模式
-{
-	//ros::NodeHandle nh;
-	char *ros_master = "192.168.1.150";
-
-	printf("正在连接 %s\n", ros_master);
-	nh.initNode(ros_master);
-
-	nh.subscribe(poseSub);
-	printf("等待接收消息\n");
-
-	printf("转发cmd_vel_winpc消息 \n");
-	
-	nh.advertise(cmd_vel_pub);
-	
-}
+//void CSPM_CameraControlDlg::InitRosClient(void)//ligy 20191115 add.Ros客户端设置，设置为订阅模式
+//{
+//	//ros::NodeHandle nh;
+//	char *ros_master = "192.168.1.150";
+//
+//	printf("正在连接 %s\n", ros_master);
+//	nh.initNode(ros_master);
+//
+//	nh.subscribe(poseSub);
+//	printf("等待接收消息\n");
+//
+//	printf("转发cmd_vel_winpc消息 \n");
+//	
+//	nh.advertise(cmd_vel_pub);
+//	
+//}

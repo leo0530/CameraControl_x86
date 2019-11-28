@@ -1,0 +1,13 @@
+﻿生成启动时间为 2019/11/22 15:53:53。
+     1>项目“D:\x86资料\Camera控制\SPM_CameraControl\SPM_CameraControl\SPM_CameraControl.vcxproj”在节点 2 上(build 个目标)。
+     1>InitializeBuildStatus:
+         正在对“Debug\SPM_CameraControl.unsuccessfulbuild”执行 Touch 任务。
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\ros_lib /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Debug\SPM_CameraControl.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+     1>d:\x86资料\camera控制\spm_cameracontrol\spm_cameracontrol\ros.h(30): fatal error C1083: 无法打开包括文件:“ros/node_handle.h”: No such file or directory
+     1>已完成生成项目“D:\x86资料\Camera控制\SPM_CameraControl\SPM_CameraControl\SPM_CameraControl.vcxproj”(build 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:10.84

@@ -168,10 +168,93 @@ void CSPM_CameraControlDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CAPTURE, m_btnCapture);
 }
 
+LRESULT CSPM_CameraControlDlg::OnSock(WPARAM wParam, LPARAM lParam)
+{
+	UINT8 *data = new UINT8[READ_MAX_BUFFER];
+	SOCKADDR_IN addrFrom;
+	UINT32 len = udpCliCls.read(data, &addrFrom, wParam, lParam);
+	if (len > 0)
+	{
+		printf("***UDP client recv\r\n", len);
+		printf("ip = %08x port = %5d\r\n", addrFrom.sin_addr.S_un.S_addr, ntohs(addrFrom.sin_port));
+		for (DWORD i = 0; i < len; i++)
+		{
+			printf("%d=%02x\r\n", i, data[i]);
+		}
+	}
+	delete data;
+	data = NULL;
+	return 0;
+}
+
+bool CSPM_CameraControlDlg::InitSock(int port)
+{
+	WSADATA wsaData;
+
+	//初始化TCP协议
+	BOOL ret = WSAStartup(MAKEWORD(2,2), &wsaData);
+	if(ret != 0)
+	{
+		printf("初始化网络协议失败");
+		return FALSE;
+	}
+
+	//创建服务器端套接字
+	m_serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if(m_serverSocket == INVALID_SOCKET)
+	{
+		printf("创建套接字失败");
+		closesocket(m_serverSocket);
+		WSACleanup();
+		return FALSE;
+	}
+
+	//将SeverSock设置为异步非阻塞模式，并为它注册各种网络异步事件，其中m_hWnd      
+	//为应用程序的主对话框或主窗口的句柄
+	if(WSAAsyncSelect(m_serverSocket, this->m_hWnd, WM_CONNECT, FD_ACCEPT|FD_READ) == SOCKET_ERROR)
+	{
+		printf("注册网络异步事件失败");
+		WSACleanup();
+		return FALSE;
+	}
+
+	//绑定到本地一个端口上
+	sockaddr_in localaddr;
+	localaddr.sin_family = AF_INET;
+	localaddr.sin_port = htons(port);     //端口号不要与其他应用程序冲突
+	localaddr.sin_addr.s_addr = htonl(INADDR_ANY);;
+	if(bind(m_serverSocket ,(struct sockaddr*)&localaddr,sizeof(sockaddr)) == SOCKET_ERROR)
+	{
+		printf("绑定地址失败");
+		closesocket(m_serverSocket);
+		WSACleanup();
+		return FALSE;
+	}
+
+
+	listen(m_serverSocket, 5); //设置侦听模式
+
+	return TRUE;
+}
+
+LRESULT CSPM_CameraControlDlg::OnConnect(WPARAM  wParam ,LPARAM lParam) 
+{
+	if (FD_READ == lParam)
+	{
+		char buf[1024] ={0}; 
+		int len = recv(m_clientSocket,buf,1024,0) ;
+		printf("%s\n",buf);
+	}
+	return 0;
+}
+
 
 BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 	ON_MESSAGE(WM_SAVEIMAGE,OnSaveImage)
 	ON_MESSAGE(WM_UPDATEIMAGE,OnUpdateImage)
+	ON_MESSAGE(UDP_READ, OnSock)	//消息绑定UDP_READ
+	ON_MESSAGE(WM_CONNECT,OnConnect) 
+
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -188,6 +271,7 @@ BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_ID6, &CSPM_CameraControlDlg::OnBnClickedRadioId6)
 	ON_BN_CLICKED(IDC_RADIO_ID7, &CSPM_CameraControlDlg::OnBnClickedRadioId7)
 	ON_BN_CLICKED(IDC_RADIO_ID8, &CSPM_CameraControlDlg::OnBnClickedRadioId8)
+	ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -247,6 +331,16 @@ BOOL CSPM_CameraControlDlg::OnInitDialog()
 
 //	InitRosClient();//初始化ros客户端，设置为订阅模式
 //	SetTimer(2,100,NULL);
+
+	/*if (!InitSock(8888))
+	{
+		printf("tcp server open fail");
+	}*/
+
+	if (!udpCliCls.IsOpen())
+	{
+		udpCliCls.Open("192.168.1.168",8888,this->m_hWnd);//服务器地址：192.168.1.168
+	}
 
 	
 
@@ -312,6 +406,8 @@ void CSPM_CameraControlDlg::OnDestroy()
 	KillTimer(2);//停止定时器
 	CloseCamera();//关闭相机
 
+	closesocket(m_serverSocket);          //关闭连接
+	WSACleanup();
 }
 
 
@@ -1046,3 +1142,11 @@ void CSPM_CameraControlDlg::StopCamera(int index)
 //	nh.advertise(cmd_vel_pub);
 //	
 //}
+
+
+void CSPM_CameraControlDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	UINT8 buf[10]={1,2,3,5,6,7,8,9};
+	udpCliCls.write(buf,8);
+}

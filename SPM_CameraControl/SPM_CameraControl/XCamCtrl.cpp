@@ -73,21 +73,21 @@ CXCamCtrl::CXCamCtrl(UINT64 ID)
 	
 	OParam.UID = ID;
 	if (!::XCCAM_Open(&OParam, &m_hCamera))
-		printf("Camera Open Error");
+		printf("Camera Open Error\n");
 	Mode.Parallel_Thread = 4;
 	::XCCAM_SetConvMode(m_hCamera, &Mode, NULL);
 	::XCCAM_GetFeatureHandle(m_hCamera, &m_hFeature);
 	
 	if (!::XCCAM_ResourceAlloc(m_hCamera))
 	{
-		printf("Resource Alloc Error!");
+		printf("Resource Alloc Error!\n");
 	}
 	
 	ULONG Len = 0;
 	if (!::XCCAM_GetBMPINFO(m_hCamera, NULL, &Len, false))
 	{
 		::XCCAM_ResourceRelease(m_hCamera);
-		printf("Get BMPINFO Error!");
+		printf("Get BMPINFO Error!\n");
 	}
 	
 	if (m_pBitInfo)
@@ -97,7 +97,7 @@ CXCamCtrl::CXCamCtrl(UINT64 ID)
 	if (!::XCCAM_GetBMPINFO(m_hCamera, m_pBitInfo, &Len, false))
 	{
 		::XCCAM_ResourceRelease(m_hCamera);
-		printf("Get BMPINFO Error£¡");
+		printf("Get BMPINFO Error£¡\n");
 	}
 	//if(m_pRGBData)
 	//	delete []m_pRGBData;
@@ -125,7 +125,7 @@ bool CXCamCtrl::StartCamera(IMAGEFUNC func)
 	{
 		::XCCAM_SetImageCallBack(m_hCamera, NULL, NULL, 0, false);
 		::XCCAM_ResourceRelease(m_hCamera);
-		printf("Image Start Error£¡");
+		printf("Image Start Error£¡\n");
 		return false;
 	}
 	
@@ -135,12 +135,12 @@ bool CXCamCtrl::StartCamera(IMAGEFUNC func)
 void CXCamCtrl::StopCamera()
 {
 	if(!::XCCAM_ImageStop(m_hCamera))
-		printf("Image Stop Error");
+		printf("Image Stop Error\n");
 
 	::XCCAM_SetImageCallBack(m_hCamera, 0, 0, 0, false);
 
 	if(!::XCCAM_ResourceRelease(m_hCamera))
-		printf("Resource Release Error");
+		printf("Resource Release Error\n");
 
 }
 

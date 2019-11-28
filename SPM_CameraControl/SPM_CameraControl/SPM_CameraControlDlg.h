@@ -13,6 +13,7 @@
 
 #define WM_SAVEIMAGE   WM_USER + 1000
 #define WM_UPDATEIMAGE WM_USER + 1001
+#define WM_CONNECT     WM_USER + 2000
 
 #define PICTUREWIDTH  640
 #define PICTUREHEIGHT 480
@@ -57,9 +58,14 @@ public:
 	std::vector<UINT64> m_CameraInfoList;//相机列表
 
 	int m_iSelectCameraId;
+
+	SOCKET m_serverSocket;//服务器socket
+	SOCKET m_clientSocket;//客户端socket,用于向客户端发送数据
 // 实现
 protected:
 	HICON m_hIcon;
+
+	UDPClientClass udpCliCls;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
@@ -76,12 +82,16 @@ public:
 
 	LRESULT OnUpdateImage(WPARAM, LPARAM);
 	LRESULT OnSaveImage(WPARAM, LPARAM);
+	LRESULT OnSock(WPARAM wParam, LPARAM lParam);//udp接收数据消息
+	LRESULT OnConnect(WPARAM  wParam ,LPARAM lParam);
 
 	void OpenCamera(void);
 	void CloseCamera(void);
 
+	bool InitSock(int port);//初始化socket
+
 	afx_msg void OnBnClickedButtonSave();
-//	afx_msg void OnBnClickedButton1();
+
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void SaveImage(int index);
 	afx_msg void OnBnClickedRadioId1();
@@ -95,5 +105,6 @@ public:
 	bool StartCamera(int index,bool bOpen);
 	void StopCamera(int index);
 //	void InitRosClient(void);
+	afx_msg void OnBnClickedButton1();
 };
 

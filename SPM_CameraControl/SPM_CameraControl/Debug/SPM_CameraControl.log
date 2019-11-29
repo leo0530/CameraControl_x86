@@ -1,11 +1,16 @@
-﻿生成启动时间为 2019/11/28 16:37:50。
+﻿生成启动时间为 2019/11/29 15:36:27。
      1>项目“D:\CameraControl_x86\SPM_CameraControl\SPM_CameraControl\SPM_CameraControl.vcxproj”在节点 2 上(build 个目标)。
      1>InitializeBuildStatus:
          正在创建“Debug\SPM_CameraControl.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
        ClCompile:
-         所有输出均为最新。
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\ros_lib /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\SPM_CameraControl.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt SPM_CameraControlDlg.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../ros_lib /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Debug\SPM_CameraControl.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../ros_lib /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\SPM_CameraControl.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CameraControl.cpp SPM_CameraControl.cpp SPM_CameraControlDlg.cpp XCamCtrl.cpp
+         XCamCtrl.cpp
          SPM_CameraControlDlg.cpp
+         SPM_CameraControl.cpp
+         CameraControl.cpp
+         正在生成代码...
        ResourceCompile:
          所有输出均为最新。
        ManifestResourceCompile:
@@ -31,4 +36,4 @@
 
 生成成功。
 
-已用时间 00:00:05.09
+已用时间 00:00:18.57

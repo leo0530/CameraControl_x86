@@ -7,7 +7,7 @@
 #include "XCamCtrl.h"
 #include "UDPClientClass.h"
 #include "afxwin.h"
-
+#include "UDPServer.h"
 #include <winsock2.h>
 #pragma comment(lib,"ws2_32.lib") 
 
@@ -59,8 +59,8 @@ public:
 
 	int m_iSelectCameraId;
 
-	SOCKET m_serverSocket;//服务器socket
-	SOCKET m_clientSocket;//客户端socket,用于向客户端发送数据
+	UDPServer *udpServer;
+	CWinThread *m_pThread;
 // 实现
 protected:
 	HICON m_hIcon;
@@ -83,28 +83,18 @@ public:
 	LRESULT OnUpdateImage(WPARAM, LPARAM);
 	LRESULT OnSaveImage(WPARAM, LPARAM);
 	LRESULT OnSock(WPARAM wParam, LPARAM lParam);//udp接收数据消息
-	LRESULT OnConnect(WPARAM  wParam ,LPARAM lParam);
 
 	void OpenCamera(void);
 	void CloseCamera(void);
-
-	bool InitSock(int port);//初始化socket
 
 	afx_msg void OnBnClickedButtonSave();
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void SaveImage(int index);
-	afx_msg void OnBnClickedRadioId1();
-	afx_msg void OnBnClickedRadioId2();
-	afx_msg void OnBnClickedRadioId3();
-	afx_msg void OnBnClickedRadioId4();
-	afx_msg void OnBnClickedRadioId5();
-	afx_msg void OnBnClickedRadioId6();
-	afx_msg void OnBnClickedRadioId7();
-	afx_msg void OnBnClickedRadioId8();
+
 	bool StartCamera(int index,bool bOpen);
 	void StopCamera(int index);
-//	void InitRosClient(void);
-	afx_msg void OnBnClickedButton1();
+
+//	afx_msg void OnBnClickedButton1();
 };
 

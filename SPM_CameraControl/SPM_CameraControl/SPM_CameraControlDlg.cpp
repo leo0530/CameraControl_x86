@@ -187,73 +187,11 @@ LRESULT CSPM_CameraControlDlg::OnSock(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-bool CSPM_CameraControlDlg::InitSock(int port)
-{
-	WSADATA wsaData;
-
-	//初始化TCP协议
-	BOOL ret = WSAStartup(MAKEWORD(2,2), &wsaData);
-	if(ret != 0)
-	{
-		printf("初始化网络协议失败");
-		return FALSE;
-	}
-
-	//创建服务器端套接字
-	m_serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if(m_serverSocket == INVALID_SOCKET)
-	{
-		printf("创建套接字失败");
-		closesocket(m_serverSocket);
-		WSACleanup();
-		return FALSE;
-	}
-
-	//将SeverSock设置为异步非阻塞模式，并为它注册各种网络异步事件，其中m_hWnd      
-	//为应用程序的主对话框或主窗口的句柄
-	if(WSAAsyncSelect(m_serverSocket, this->m_hWnd, WM_CONNECT, FD_ACCEPT|FD_READ) == SOCKET_ERROR)
-	{
-		printf("注册网络异步事件失败");
-		WSACleanup();
-		return FALSE;
-	}
-
-	//绑定到本地一个端口上
-	sockaddr_in localaddr;
-	localaddr.sin_family = AF_INET;
-	localaddr.sin_port = htons(port);     //端口号不要与其他应用程序冲突
-	localaddr.sin_addr.s_addr = htonl(INADDR_ANY);;
-	if(bind(m_serverSocket ,(struct sockaddr*)&localaddr,sizeof(sockaddr)) == SOCKET_ERROR)
-	{
-		printf("绑定地址失败");
-		closesocket(m_serverSocket);
-		WSACleanup();
-		return FALSE;
-	}
-
-
-	listen(m_serverSocket, 5); //设置侦听模式
-
-	return TRUE;
-}
-
-LRESULT CSPM_CameraControlDlg::OnConnect(WPARAM  wParam ,LPARAM lParam) 
-{
-	if (FD_READ == lParam)
-	{
-		char buf[1024] ={0}; 
-		int len = recv(m_clientSocket,buf,1024,0) ;
-		printf("%s\n",buf);
-	}
-	return 0;
-}
-
 
 BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 	ON_MESSAGE(WM_SAVEIMAGE,OnSaveImage)
 	ON_MESSAGE(WM_UPDATEIMAGE,OnUpdateImage)
 	ON_MESSAGE(UDP_READ, OnSock)	//消息绑定UDP_READ
-	ON_MESSAGE(WM_CONNECT,OnConnect) 
 
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -261,19 +199,25 @@ BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_CAPTURE, &CSPM_CameraControlDlg::OnBnClickedButtonCapture)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CSPM_CameraControlDlg::OnBnClickedButtonSave)
-//	ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_RADIO_ID1, &CSPM_CameraControlDlg::OnBnClickedRadioId1)
-	ON_BN_CLICKED(IDC_RADIO_ID2, &CSPM_CameraControlDlg::OnBnClickedRadioId2)
-	ON_BN_CLICKED(IDC_RADIO_ID3, &CSPM_CameraControlDlg::OnBnClickedRadioId3)
-	ON_BN_CLICKED(IDC_RADIO_ID4, &CSPM_CameraControlDlg::OnBnClickedRadioId4)
-	ON_BN_CLICKED(IDC_RADIO_ID5, &CSPM_CameraControlDlg::OnBnClickedRadioId5)
-	ON_BN_CLICKED(IDC_RADIO_ID6, &CSPM_CameraControlDlg::OnBnClickedRadioId6)
-	ON_BN_CLICKED(IDC_RADIO_ID7, &CSPM_CameraControlDlg::OnBnClickedRadioId7)
-	ON_BN_CLICKED(IDC_RADIO_ID8, &CSPM_CameraControlDlg::OnBnClickedRadioId8)
-	ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
+
+//	ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
+
+bool g_bRun = true;//线程运行标识
+DWORD WINAPI   ThreadProc(LPVOID lpParam)
+{
+	CSPM_CameraControlDlg *pWnd = (CSPM_CameraControlDlg *)lpParam; 
+
+	while (g_bRun)
+	{
+		char buf[1024] = {0};
+		int len = pWnd->udpServer->receive();
+		printf("%d:%s\n",len,g_DataRecv);
+	}
+	return 0;
+}
 
 // CSPM_CameraControlDlg 消息处理程序
 
@@ -309,39 +253,33 @@ BOOL CSPM_CameraControlDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 	g_hWnd = GetSafeHwnd();
 
-	
-
-	(CButton*)GetDlgItem(IDC_RADIO_ID1)->EnableWindow(FALSE);
-	(CButton*)GetDlgItem(IDC_RADIO_ID2)->EnableWindow(FALSE);
-	(CButton*)GetDlgItem(IDC_RADIO_ID3)->EnableWindow(FALSE);
-	(CButton*)GetDlgItem(IDC_RADIO_ID4)->EnableWindow(FALSE);
-	(CButton*)GetDlgItem(IDC_RADIO_ID5)->EnableWindow(FALSE);
-	(CButton*)GetDlgItem(IDC_RADIO_ID6)->EnableWindow(FALSE);
-	(CButton*)GetDlgItem(IDC_RADIO_ID7)->EnableWindow(FALSE);
-	(CButton*)GetDlgItem(IDC_RADIO_ID8)->EnableWindow(FALSE);
-
 	RECT rect;
 	m_Image.GetClientRect(&rect);
 	rect.right = rect.left + PICTUREWIDTH;
 	rect.bottom = rect.top + PICTUREHEIGHT;
-	m_Image.MoveWindow(&rect, FALSE);
-	m_Image.Set_CCameraView(this);
+//	m_Image.MoveWindow(&rect, FALSE);
+//	m_Image.Set_CCameraView(this);
 
 	OpenCamera();//打开相机
 
 //	InitRosClient();//初始化ros客户端，设置为订阅模式
 //	SetTimer(2,100,NULL);
 
-	/*if (!InitSock(8888))
-	{
-		printf("tcp server open fail");
-	}*/
+	//if (!udpCliCls.IsOpen())
+	//{
+	//	BOOL b = udpCliCls.Open("192.168.0.112",8888,this->m_hWnd);//服务器地址：192.168.1.168
+	//	if (!b)
+	//	{
+	//		printf("udp initial fail!");
+	//	}
 
-	if (!udpCliCls.IsOpen())
-	{
-		udpCliCls.Open("192.168.1.168",8888,this->m_hWnd);//服务器地址：192.168.1.168
-	}
+	//}
 
+	udpServer = new UDPServer();
+	udpServer->listen(8888);//监听端口8888
+	//m_pThread = AfxBeginThread(UdpDataProc, (LPVOID)this);//启动新的线程
+	HANDLE hThread = CreateThread(NULL,0,ThreadProc,this,0,NULL);
+	CloseHandle(hThread);
 	
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -406,8 +344,12 @@ void CSPM_CameraControlDlg::OnDestroy()
 	KillTimer(2);//停止定时器
 	CloseCamera();//关闭相机
 
-	closesocket(m_serverSocket);          //关闭连接
-	WSACleanup();
+	g_bRun = false;//终止线程
+	if (udpServer)
+	{
+		delete udpServer;
+		udpServer = NULL;
+	}
 }
 
 
@@ -867,11 +809,11 @@ void CSPM_CameraControlDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		::PostMessage(g_hWnd,WM_UPDATEIMAGE,NULL,NULL);
 	}*/
-	/*if (nIDEvent == 2)
+	if (nIDEvent == 2)
 	{
-		cmd_vel_pub.publish(&twist_msg);
-		nh.spinOnce();
-	}*/
+		//cmd_vel_pub.publish(&twist_msg);
+		//nh.spinOnce();
+	}
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -904,62 +846,6 @@ void CSPM_CameraControlDlg::SaveImage(int index)
 	Image.Save(strPath, Gdiplus::ImageFormatBMP);
 }
 
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId1()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 1;
-}
-
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId2()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 2;
-}
-
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId3()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 3;
-}
-
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId4()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 4;
-}
-
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId5()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 5;
-
-}
-
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId6()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 6;
-}
-
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId7()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 7;
-}
-
-
-void CSPM_CameraControlDlg::OnBnClickedRadioId8()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	m_iSelectCameraId = 8;
-}
 
 
 bool CSPM_CameraControlDlg::StartCamera(int index,bool bOpen)
@@ -1024,34 +910,67 @@ bool CSPM_CameraControlDlg::StartCamera(int index,bool bOpen)
 			}
 		}
 	} 
-	//else if (index == 5)
-	//{
-	//	if (g_bIsCamera5Open)
-	//	{	
-	//		g_bIsCameta5Stop = !g_pCamera5->StartCamera(ImageDataRcv5);
-	//	} 
-	//} 
-	//else if (index == 6)
-	//{
-	//	if (g_bIsCamera6Open)
-	//	{	
-	//		g_bIsCameta6Stop = !g_pCamera6->StartCamera(ImageDataRcv6);
-	//	} 
-	//} 
-	//else if (index == 7)
-	//{
-	//	if (g_bIsCamera7Open)
-	//	{	
-	//		g_bIsCameta7Stop = !g_pCamera7->StartCamera(ImageDataRcv7);
-	//	} 
-	//} 
-	//else if (index == 8)
-	//{
-	//	if (g_bIsCamera8Open)
-	//	{	
-	//		g_bIsCameta8Stop = !g_pCamera8->StartCamera(ImageDataRcv8);
-	//	} 
-	//} 
+	else if (index == 5)
+	{
+		if (g_pCamera5)
+		{
+			if (bOpen)
+			{
+				g_bIsCameta5Stop = !g_pCamera5->StartCamera(ImageDataRcv5);
+			} 
+			else
+			{
+				g_pCamera5->StopCamera();
+				g_bIsCameta5Stop = true;
+			}
+		}
+	} 
+	else if (index == 6)
+	{
+		if (g_pCamera6)
+		{
+			if (bOpen)
+			{
+				g_bIsCameta6Stop = !g_pCamera6->StartCamera(ImageDataRcv6);
+			} 
+			else
+			{
+				g_pCamera6->StopCamera();
+				g_bIsCameta6Stop = true;
+			}
+		}
+	} 
+	else if (index == 7)
+	{
+		if (g_pCamera7)
+		{
+			if (bOpen)
+			{
+				g_bIsCameta7Stop = !g_pCamera7->StartCamera(ImageDataRcv7);
+			} 
+			else
+			{
+				g_pCamera7->StopCamera();
+				g_bIsCameta7Stop = true;
+			}
+		}
+	} 
+	else if (index == 8)
+	{
+		if (g_pCamera8)
+		{
+			if (bOpen)
+			{
+				g_bIsCameta8Stop = !g_pCamera8->StartCamera(ImageDataRcv8);
+			} 
+			else
+			{
+				g_pCamera8->StopCamera();
+				g_bIsCameta8Stop = true;
+			}
+		}
+	} 
+
 	
 	return true;
 }
@@ -1144,9 +1063,9 @@ void CSPM_CameraControlDlg::StopCamera(int index)
 //}
 
 
-void CSPM_CameraControlDlg::OnBnClickedButton1()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	UINT8 buf[10]={1,2,3,5,6,7,8,9};
-	udpCliCls.write(buf,8);
-}
+//void CSPM_CameraControlDlg::OnBnClickedButton1()
+//{
+//	// TODO: 在此添加控件通知处理程序代码
+//	//UINT8 buf[10]={1,2,3,5,6,7,8,9};
+//	//int ret = udpCliCls.write(buf,8);
+//}

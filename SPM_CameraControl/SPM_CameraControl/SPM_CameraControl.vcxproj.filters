@@ -48,6 +48,9 @@
     <ClInclude Include="UDPClientClass.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="UDPServer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SPM_CameraControl.cpp">
@@ -63,6 +66,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CameraControl.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPServer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

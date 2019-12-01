@@ -45,7 +45,7 @@
     <ClInclude Include="CameraControl.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="UDPServer.h">
+    <ClInclude Include="DASocket.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,7 +65,7 @@
     <ClCompile Include="CameraControl.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="UDPServer.cpp">
+    <ClCompile Include="DASocket.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,11 +5,8 @@
 #pragma once
 
 #include "XCamCtrl.h"
-//#include "UDPClientClass.h"
 #include "afxwin.h"
-#include "UDPServer.h"
-//#include <winsock2.h>
-//#pragma comment(lib,"ws2_32.lib") 
+#include "DASocket.h"
 
 #define WM_SAVEIMAGE   WM_USER + 1000
 #define WM_UPDATEIMAGE WM_USER + 1001
@@ -61,9 +58,9 @@ public:
 
 	int m_iSelectCameraId;
 
-	UDPServer *udpServer;
-
 	FILE * m_FileToWrite;
+
+	CDASocket *udpServ;//异步通讯
 // 实现
 protected:
 	HICON m_hIcon;
@@ -85,6 +82,7 @@ public:
 
 	LRESULT OnUpdateImage(WPARAM, LPARAM);
 	LRESULT OnSaveImage(WPARAM wParam, LPARAM lParam);
+	LRESULT OnRecvData(WPARAM wParam, LPARAM lParam);
 
 	void OpenCamera(void);
 	void CloseCamera(void);
@@ -100,3 +98,5 @@ public:
 	void WriteDataToFile(int iCameraNo);//相机数据写入文件
 };
 
+//extern HWND g_MainWnd;// = NULL;//对话框句柄
+extern HWND g_hWnd;//对话框句柄

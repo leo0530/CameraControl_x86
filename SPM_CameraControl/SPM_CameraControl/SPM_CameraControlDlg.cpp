@@ -11,20 +11,6 @@
 #define new DEBUG_NEW
 #endif
 
-
-
-//geometry_msgs::Twist twist_msg;
-//void cmd_vel_angular_callback(const geometry_msgs::Twist & cmd_vel)
-//{
-//	printf("接收手机cmd_vel %f, %f, %f, %f, %f, %f\n",
-//		cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z,
-//		cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
-//	twist_msg = cmd_vel;
-//}
-//ros::NodeHandle nh;
-//ros::Subscriber < geometry_msgs::Twist > poseSub("cmd_vel", &cmd_vel_angular_callback);
-//ros::Publisher cmd_vel_pub("cmd_vel_winpc", &twist_msg);
-
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -252,7 +238,7 @@ void CSPM_CameraControlDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 	ON_MESSAGE(WM_SAVEIMAGE,OnSaveImage)
 	ON_MESSAGE(WM_UPDATEIMAGE,OnUpdateImage)
-//	ON_MESSAGE(UDP_READ, OnSock)	//消息绑定UDP_READ
+	ON_MESSAGE(WM_RECVDATA,OnRecvData)
 
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -265,39 +251,6 @@ BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 //	ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-
-bool g_bRun = true;//线程运行标识
-DWORD WINAPI   ThreadProc(LPVOID lpParam)
-{
-	CSPM_CameraControlDlg *pWnd = (CSPM_CameraControlDlg *)lpParam; 
-
-	while (g_bRun)
-	{
-		char buf[1024] = {0};
-		int len = pWnd->udpServer->receive();
-		printf("%d:%s\n",len,g_DataRecv);
-
-		SYSTEMTIME st;
-		GetLocalTime(&st);
-		char path[512];
-		CString strTime,strPath;
-		sprintf_s(path,"d:\\%04d%02d%02d_%02d%02d%02d%04d.dat",
-			st.wYear,
-			st.wMonth,
-			st.wDay,
-			st.wHour,
-			st.wMinute,
-			st.wMinute,
-			st.wMilliseconds);
-
-		if (pWnd->m_FileToWrite == NULL)
-		{
-			pWnd->m_FileToWrite = fopen(path, "w");//打开文件
-			pWnd->StartCamera(1,true);//启动相机1采集
-		}
-	}
-	return 0;
-}
 
 // CSPM_CameraControlDlg 消息处理程序
 
@@ -345,12 +298,12 @@ BOOL CSPM_CameraControlDlg::OnInitDialog()
 //	InitRosClient();//初始化ros客户端，设置为订阅模式
 //	SetTimer(2,100,NULL);
 
-	udpServer = new UDPServer();
-	udpServer->listen(8888);//监听端口8888
-	//m_pThread = AfxBeginThread(UdpDataProc, (LPVOID)this);//启动新的线程
-	HANDLE hThread = CreateThread(NULL,0,ThreadProc,this,0,NULL);
-	CloseHandle(hThread);
 	
+	udpServ = new CDASocket();
+	if (!udpServ->Create(8888,SOCK_DGRAM))
+	{
+		printf("udp server create failure1");
+	}
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -414,11 +367,9 @@ void CSPM_CameraControlDlg::OnDestroy()
 	KillTimer(2);//停止定时器
 	CloseCamera();//关闭相机
 
-	g_bRun = false;//终止线程
-	if (udpServer)
+	if (udpServ)
 	{
-		delete udpServer;
-		udpServer = NULL;
+		delete udpServ;
 	}
 }
 
@@ -540,6 +491,25 @@ void CMyDraw::DrawItem(LPDRAWITEMSTRUCT lpdis)
 LRESULT CSPM_CameraControlDlg::OnUpdateImage(WPARAM, LPARAM)
 {
 	m_Image.Invalidate();
+	return 0;
+}
+
+LRESULT CSPM_CameraControlDlg::OnRecvData(WPARAM wParam, LPARAM lParam)//udp收到数据
+{
+//	TRACE("时间戳:%x,位置:%x\n",wParam,lParam);
+	char path[512];
+	CString strTime,strPath;
+	sprintf_s(path,"d:\\%d_%d_%d.dat",wParam,(lParam>>16)&0xffff,lParam&0xffff);
+
+	TRACE("%s\n",path);
+	return 0;
+
+	if (m_FileToWrite == NULL)
+	{
+		m_FileToWrite = fopen(path, "w");//打开文件
+		StartCamera(1,true);//启动相机1采集
+	}
+
 	return 0;
 }
 LRESULT CSPM_CameraControlDlg::OnSaveImage(WPARAM wParam, LPARAM lParam)

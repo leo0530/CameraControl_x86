@@ -45,9 +45,6 @@
     <ClInclude Include="CameraControl.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="UDPClientClass.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="UDPServer.h">
       <Filter>头文件</Filter>
     </ClInclude>

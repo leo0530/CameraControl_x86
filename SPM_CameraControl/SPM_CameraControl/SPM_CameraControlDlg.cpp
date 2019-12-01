@@ -69,36 +69,19 @@ VOID CALLBACK ImageDataRcv(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDAT
 	
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData1);
 
-	/*static int cnt = 0;
-	cnt++;
-	if(cnt%10 == 0)
-	{
-		::PostMessage(g_hWnd,WM_UPDATEIMAGE,NULL,NULL);
-	}*/
+	static int nFrameCnt = 0;//采集帧数
 
-	if(g_bSaveImage)
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
 	{
-		g_bSaveImage = false;
-		::PostMessage(g_hWnd,WM_SAVEIMAGE,NULL,NULL);
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,1,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(1,false);//停止相机1采集
+		pMp->StartCamera(2,true);//启动相机2采集
+		nFrameCnt = 0;
 	}
 
-	//if(g_bWriteDataToFile1)//写数据流到文件
-	//{
-	//	g_bWriteDataToFile1 = false;
-	//	
-	//	SYSTEMTIME st;
-	//	GetLocalTime(&st);
-	//	char path[512];
-	//	CString strTime,strPath;
-	//	sprintf_s(path,"d:\\%04d%02d%02d_%02d%02d%02d%04d.dat",st.wYear,st.wMonth,st.wDay,st.wHour,st.wMinute,st.wMinute,st.wMilliseconds);
-	//	
-	//	FILE * stream;
-	//	stream=fopen(path, "w");
-	//
-	//	int ret = fwrite(g_pRGBData1, sizeof(BYTE), int(g_iDataSize/1000) , stream);
-	//	fseek(stream,0,SEEK_END);//定位到文件尾
-	//	fclose(stream);
-	//}
  }
 
 VOID CALLBACK ImageDataRcv2(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -106,6 +89,19 @@ VOID CALLBACK ImageDataRcv2(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 	CSPM_CameraControlDlg* pMp = (CSPM_CameraControlDlg*)Context;
 	
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData2);
+
+	static int nFrameCnt = 0;//采集帧数
+
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	{
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,2,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(2,false);//停止相机2采集
+		pMp->StartCamera(3,true); //启动相机3采集
+		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+	}
  }
 
 VOID CALLBACK ImageDataRcv3(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -113,6 +109,19 @@ VOID CALLBACK ImageDataRcv3(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 	CSPM_CameraControlDlg* pMp = (CSPM_CameraControlDlg*)Context;
 
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData3);
+
+	static int nFrameCnt = 0;//采集帧数
+
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	{
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,3,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(3,false);//停止相机3采集
+		pMp->StartCamera(4,true); //启动相机4采集
+		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+	}
 }
 
 VOID CALLBACK ImageDataRcv4(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -120,6 +129,19 @@ VOID CALLBACK ImageDataRcv4(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 	CSPM_CameraControlDlg* pMp = (CSPM_CameraControlDlg*)Context;
 
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData4);
+
+	static int nFrameCnt = 0;//采集帧数
+
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	{
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,4,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(4,false);//停止相机3采集
+		pMp->StartCamera(5,true); //启动相机4采集
+		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+	}
 }
 
 VOID CALLBACK ImageDataRcv5(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -127,6 +149,19 @@ VOID CALLBACK ImageDataRcv5(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 	CSPM_CameraControlDlg* pMp = (CSPM_CameraControlDlg*)Context;
 
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData5);
+
+	static int nFrameCnt = 0;//采集帧数
+
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	{
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,5,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(5,false);//停止相机5采集
+		pMp->StartCamera(6,true); //启动相机6采集
+		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+	}
 }
 
 VOID CALLBACK ImageDataRcv6(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -134,6 +169,19 @@ VOID CALLBACK ImageDataRcv6(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 	CSPM_CameraControlDlg* pMp = (CSPM_CameraControlDlg*)Context;
 
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData6);
+
+	static int nFrameCnt = 0;//采集帧数
+
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	{
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,6,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(6,false);//停止相机6采集
+		pMp->StartCamera(7,true); //启动相机7采集
+		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+	}
 }
 
 VOID CALLBACK ImageDataRcv7(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -141,6 +189,19 @@ VOID CALLBACK ImageDataRcv7(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 	CSPM_CameraControlDlg* pMp = (CSPM_CameraControlDlg*)Context;
 
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData7);
+
+	static int nFrameCnt = 0;//采集帧数
+
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	{
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,7,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(7,false);//停止相机7采集
+		pMp->StartCamera(8,true); //启动相机8采集
+		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+	}
 }
 
 VOID CALLBACK ImageDataRcv8(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -148,6 +209,24 @@ VOID CALLBACK ImageDataRcv8(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 	CSPM_CameraControlDlg* pMp = (CSPM_CameraControlDlg*)Context;
 
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData8);
+
+	static int nFrameCnt = 0;//采集帧数
+
+	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	{
+		::PostMessage(g_hWnd,WM_SAVEIMAGE,8,NULL);
+	}
+	else
+	{
+		pMp->StartCamera(8,false);//停止相机8采集
+		//pMp->StartCamera(4,true); //启动相机4采集
+		if (pMp->m_FileToWrite != NULL)
+		{
+			fclose(pMp->m_FileToWrite);
+			pMp->m_FileToWrite = NULL;
+		}
+		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+	}
 }
 
 CSPM_CameraControlDlg::CSPM_CameraControlDlg(CWnd* pParent /*=NULL*/)
@@ -159,6 +238,8 @@ CSPM_CameraControlDlg::CSPM_CameraControlDlg(CWnd* pParent /*=NULL*/)
 
 	m_iSelectCameraId = -1;
 
+	m_FileToWrite = NULL;
+
 }
 
 void CSPM_CameraControlDlg::DoDataExchange(CDataExchange* pDX)
@@ -168,30 +249,10 @@ void CSPM_CameraControlDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CAPTURE, m_btnCapture);
 }
 
-LRESULT CSPM_CameraControlDlg::OnSock(WPARAM wParam, LPARAM lParam)
-{
-	UINT8 *data = new UINT8[READ_MAX_BUFFER];
-	SOCKADDR_IN addrFrom;
-	UINT32 len = udpCliCls.read(data, &addrFrom, wParam, lParam);
-	if (len > 0)
-	{
-		printf("***UDP client recv\r\n", len);
-		printf("ip = %08x port = %5d\r\n", addrFrom.sin_addr.S_un.S_addr, ntohs(addrFrom.sin_port));
-		for (DWORD i = 0; i < len; i++)
-		{
-			printf("%d=%02x\r\n", i, data[i]);
-		}
-	}
-	delete data;
-	data = NULL;
-	return 0;
-}
-
-
 BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 	ON_MESSAGE(WM_SAVEIMAGE,OnSaveImage)
 	ON_MESSAGE(WM_UPDATEIMAGE,OnUpdateImage)
-	ON_MESSAGE(UDP_READ, OnSock)	//消息绑定UDP_READ
+//	ON_MESSAGE(UDP_READ, OnSock)	//消息绑定UDP_READ
 
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -215,6 +276,25 @@ DWORD WINAPI   ThreadProc(LPVOID lpParam)
 		char buf[1024] = {0};
 		int len = pWnd->udpServer->receive();
 		printf("%d:%s\n",len,g_DataRecv);
+
+		SYSTEMTIME st;
+		GetLocalTime(&st);
+		char path[512];
+		CString strTime,strPath;
+		sprintf_s(path,"d:\\%04d%02d%02d_%02d%02d%02d%04d.dat",
+			st.wYear,
+			st.wMonth,
+			st.wDay,
+			st.wHour,
+			st.wMinute,
+			st.wMinute,
+			st.wMilliseconds);
+
+		if (pWnd->m_FileToWrite == NULL)
+		{
+			pWnd->m_FileToWrite = fopen(path, "w");//打开文件
+			pWnd->StartCamera(1,true);//启动相机1采集
+		}
 	}
 	return 0;
 }
@@ -264,16 +344,6 @@ BOOL CSPM_CameraControlDlg::OnInitDialog()
 
 //	InitRosClient();//初始化ros客户端，设置为订阅模式
 //	SetTimer(2,100,NULL);
-
-	//if (!udpCliCls.IsOpen())
-	//{
-	//	BOOL b = udpCliCls.Open("192.168.0.112",8888,this->m_hWnd);//服务器地址：192.168.1.168
-	//	if (!b)
-	//	{
-	//		printf("udp initial fail!");
-	//	}
-
-	//}
 
 	udpServer = new UDPServer();
 	udpServer->listen(8888);//监听端口8888
@@ -355,8 +425,11 @@ void CSPM_CameraControlDlg::OnDestroy()
 
 void CSPM_CameraControlDlg::OnBnClickedButtonCapture()
 {
+	::PostMessage(g_hWnd,WM_SAVEIMAGE,1,NULL);
+	return;
 	// TODO: 在此添加控件通知处理程序代码
 	CString strBtnText;
+
 	m_btnCapture.GetWindowTextW(strBtnText);
 
 	if (strBtnText.Compare(_T("开始采集")) == 0)
@@ -469,32 +542,34 @@ LRESULT CSPM_CameraControlDlg::OnUpdateImage(WPARAM, LPARAM)
 	m_Image.Invalidate();
 	return 0;
 }
-LRESULT CSPM_CameraControlDlg::OnSaveImage(WPARAM, LPARAM)
+LRESULT CSPM_CameraControlDlg::OnSaveImage(WPARAM wParam, LPARAM lParam)
 {
-	if (!g_pRGBData1)
-	{
-		return 1;
-	}
+	WriteDataToFile(wParam);
 
-	CBitmap wBitMap;
+	//if (!g_pRGBData1)
+	//{
+	//	return 1;
+	//}
 
-	wBitMap.CreateBitmap(
-		g_pBitInfo1->bmiHeader.biWidth,
-		g_pBitInfo1->bmiHeader.biHeight,
-		g_pBitInfo1->bmiHeader.biPlanes,
-		g_pBitInfo1->bmiHeader.biBitCount,
-		g_pRGBData1);
+	//CBitmap wBitMap;
 
-	SYSTEMTIME st;
-	GetLocalTime(&st);
-	CString strTime,strPath;
-	strTime.Format(_T("%04d%02d%02d_%02d%02d%02d%04d"),st.wYear,st.wMonth,st.wDay,st.wHour,st.wMinute,st.wMinute,st.wMilliseconds);
-	strPath = _T("d:\\") + strTime + _T(".bmp");
+	//wBitMap.CreateBitmap(
+	//	g_pBitInfo1->bmiHeader.biWidth,
+	//	g_pBitInfo1->bmiHeader.biHeight,
+	//	g_pBitInfo1->bmiHeader.biPlanes,
+	//	g_pBitInfo1->bmiHeader.biBitCount,
+	//	g_pRGBData1);
 
-	CImage Image;
+	//SYSTEMTIME st;
+	//GetLocalTime(&st);
+	//CString strTime,strPath;
+	//strTime.Format(_T("%04d%02d%02d_%02d%02d%02d%04d"),st.wYear,st.wMonth,st.wDay,st.wHour,st.wMinute,st.wMinute,st.wMilliseconds);
+	//strPath = _T("d:\\") + strTime + _T(".bmp");
 
-	Image.Attach(wBitMap);
-	Image.Save(strPath, Gdiplus::ImageFormatBMP);
+	//CImage Image;
+
+	//Image.Attach(wBitMap);
+	//Image.Save(strPath, Gdiplus::ImageFormatBMP);
 
 	return 0;
 }
@@ -525,12 +600,8 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				
 				if(g_pRGBData1)
 					delete []g_pRGBData1;
-				g_iDataSize = g_pBitInfo1->bmiHeader.biSizeImage;
+			//	g_iDataSize = g_pBitInfo1->bmiHeader.biSizeImage;
 				g_pRGBData1 = new BYTE[g_pCamera1->GetBitmapInfo()->bmiHeader.biSizeImage];
-
-			//	g_bIsCamera1Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID1)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -550,8 +621,6 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				g_pRGBData2 = new BYTE[g_pCamera2->GetBitmapInfo()->bmiHeader.biSizeImage];
 
 				g_bIsCamera2Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID2)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -570,8 +639,6 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				g_pRGBData3 = new BYTE[g_pCamera3->GetBitmapInfo()->bmiHeader.biSizeImage];
 
 				g_bIsCamera3Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID3)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -590,8 +657,6 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				g_pRGBData4= new BYTE[g_pCamera4->GetBitmapInfo()->bmiHeader.biSizeImage];
 
 				g_bIsCamera4Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID4)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -610,8 +675,6 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				g_pRGBData5= new BYTE[g_pCamera5->GetBitmapInfo()->bmiHeader.biSizeImage];
 
 				g_bIsCamera5Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID5)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -630,8 +693,6 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				g_pRGBData6= new BYTE[g_pCamera6->GetBitmapInfo()->bmiHeader.biSizeImage];
 
 				g_bIsCamera6Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID6)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -650,8 +711,6 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				g_pRGBData7= new BYTE[g_pCamera7->GetBitmapInfo()->bmiHeader.biSizeImage];
 
 				g_bIsCamera7Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID7)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -670,8 +729,6 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				g_pRGBData8= new BYTE[g_pCamera8->GetBitmapInfo()->bmiHeader.biSizeImage];
 
 				g_bIsCamera8Open = TRUE;
-
-				(CButton*)GetDlgItem(IDC_RADIO_ID8)->EnableWindow(TRUE);
 			}
 			else
 			{
@@ -794,10 +851,8 @@ void CSPM_CameraControlDlg::CloseCamera(void)
 void CSPM_CameraControlDlg::OnBnClickedButtonSave()
 {
 	// TODO: 在此添加控件通知处理程序代码
-//	SaveImage(1);
 	g_bSaveImage = true;
 	g_bWriteDataToFile1 = true;
-
 }
 
 
@@ -809,11 +864,11 @@ void CSPM_CameraControlDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		::PostMessage(g_hWnd,WM_UPDATEIMAGE,NULL,NULL);
 	}*/
-	if (nIDEvent == 2)
-	{
-		//cmd_vel_pub.publish(&twist_msg);
-		//nh.spinOnce();
-	}
+	//if (nIDEvent == 2)
+	//{
+	//	//cmd_vel_pub.publish(&twist_msg);
+	//	//nh.spinOnce();
+	//}
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -1063,9 +1118,84 @@ void CSPM_CameraControlDlg::StopCamera(int index)
 //}
 
 
-//void CSPM_CameraControlDlg::OnBnClickedButton1()
-//{
-//	// TODO: 在此添加控件通知处理程序代码
-//	//UINT8 buf[10]={1,2,3,5,6,7,8,9};
-//	//int ret = udpCliCls.write(buf,8);
-//}
+void CSPM_CameraControlDlg::WriteDataToFile(int iCameraNo)//将相机采集到数据以二进制形式写入文件
+{
+	if (m_FileToWrite == NULL)
+	{
+		return;
+	}
+	if (iCameraNo == 1)//相机1
+	{
+		if (g_pRGBData1 == NULL)
+		{
+			return;
+		}
+		int ret = fwrite(g_pRGBData1, sizeof(BYTE), g_pBitInfo1->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+	else if (iCameraNo == 2)//相机2
+	{
+		if (g_pRGBData2 == NULL)
+		{
+			return;
+		}
+
+		int ret = fwrite(g_pRGBData2, sizeof(BYTE), g_pBitInfo2->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+	else if (iCameraNo == 3)//相机3
+	{
+		if (g_pRGBData3 == NULL)
+		{
+			return;
+		}
+		int ret = fwrite(g_pRGBData3, sizeof(BYTE), g_pBitInfo3->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+	else if (iCameraNo == 4)//相机4
+	{
+		if (g_pRGBData4 == NULL)
+		{
+			return;
+		}
+		int ret = fwrite(g_pRGBData4, sizeof(BYTE), g_pBitInfo4->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+	else if (iCameraNo == 5)//相机5
+	{
+		if (g_pRGBData5 == NULL)
+		{
+			return;
+		}
+
+		int ret = fwrite(g_pRGBData5, sizeof(BYTE), g_pBitInfo5->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+	else if (iCameraNo == 6)//相机6
+	{
+		if (g_pRGBData6 == NULL)
+		{
+			return;
+		}
+		int ret = fwrite(g_pRGBData6, sizeof(BYTE), g_pBitInfo6->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+	else if (iCameraNo == 7)//相机7
+	{
+		if (g_pRGBData7 == NULL)
+		{
+			return;
+		}
+		int ret = fwrite(g_pRGBData7, sizeof(BYTE), g_pBitInfo7->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+	else if (iCameraNo == 8)//相机8
+	{
+		if (g_pRGBData8 == NULL)
+		{
+			return;
+		}
+		int ret = fwrite(g_pRGBData8, sizeof(BYTE), g_pBitInfo8->bmiHeader.biSizeImage, m_FileToWrite);
+		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
+	} 
+}

@@ -115,7 +115,6 @@
     <ClInclude Include="SPM_CameraControlDlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="UDPClientClass.h" />
     <ClInclude Include="UDPServer.h" />
     <ClInclude Include="XCamCtrl.h" />
   </ItemGroup>

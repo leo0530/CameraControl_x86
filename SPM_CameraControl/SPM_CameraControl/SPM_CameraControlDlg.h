@@ -5,11 +5,11 @@
 #pragma once
 
 #include "XCamCtrl.h"
-#include "UDPClientClass.h"
+//#include "UDPClientClass.h"
 #include "afxwin.h"
 #include "UDPServer.h"
-#include <winsock2.h>
-#pragma comment(lib,"ws2_32.lib") 
+//#include <winsock2.h>
+//#pragma comment(lib,"ws2_32.lib") 
 
 #define WM_SAVEIMAGE   WM_USER + 1000
 #define WM_UPDATEIMAGE WM_USER + 1001
@@ -18,6 +18,8 @@
 #define PICTUREWIDTH  640
 #define PICTUREHEIGHT 480
 #define ROS_SERVER_IP "192.168.0.150"
+
+#define FRAME_NUMS  3 //图像数据存储帧数
 
 class CSPM_CameraControlDlg;
 
@@ -60,12 +62,13 @@ public:
 	int m_iSelectCameraId;
 
 	UDPServer *udpServer;
-	CWinThread *m_pThread;
+
+	FILE * m_FileToWrite;
 // 实现
 protected:
 	HICON m_hIcon;
 
-	UDPClientClass udpCliCls;
+//	UDPClientClass udpCliCls;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
@@ -81,8 +84,7 @@ public:
 	void ShowImage(void);
 
 	LRESULT OnUpdateImage(WPARAM, LPARAM);
-	LRESULT OnSaveImage(WPARAM, LPARAM);
-	LRESULT OnSock(WPARAM wParam, LPARAM lParam);//udp接收数据消息
+	LRESULT OnSaveImage(WPARAM wParam, LPARAM lParam);
 
 	void OpenCamera(void);
 	void CloseCamera(void);
@@ -95,6 +97,6 @@ public:
 	bool StartCamera(int index,bool bOpen);
 	void StopCamera(int index);
 
-//	afx_msg void OnBnClickedButton1();
+	void WriteDataToFile(int iCameraNo);//相机数据写入文件
 };
 

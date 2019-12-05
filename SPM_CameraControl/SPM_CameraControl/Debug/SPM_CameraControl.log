@@ -1,4 +1,4 @@
-﻿生成启动时间为 2019/12/5 10:42:37。
+﻿生成启动时间为 2019/12/5 11:23:06。
      1>项目“D:\CameraControl_x86\SPM_CameraControl\SPM_CameraControl\SPM_CameraControl.vcxproj”在节点 2 上(build 个目标)。
      1>InitializeBuildStatus:
          正在创建“Debug\SPM_CameraControl.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
@@ -6,7 +6,9 @@
          所有输出均为最新。
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../ros_lib /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\SPM_CameraControl.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt SPM_CameraControlDlg.cpp
          SPM_CameraControlDlg.cpp
-     1>d:\cameracontrol_x86\spm_cameracontrol\spm_cameracontrol\spm_cameracontroldlg.cpp(523): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>d:\cameracontrol_x86\spm_cameracontrol\spm_cameracontrol\spm_cameracontroldlg.cpp(533): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : 参见“fopen”的声明
+     1>d:\cameracontrol_x86\spm_cameracontrol\spm_cameracontrol\spm_cameracontroldlg.cpp(1213): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : 参见“fopen”的声明
          所有输出均为最新。
        ResourceCompile:
@@ -38,4 +40,4 @@
 
 生成成功。
 
-已用时间 00:00:04.04
+已用时间 00:00:02.51

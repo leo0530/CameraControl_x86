@@ -47,6 +47,8 @@ class CSPM_CameraControlDlg : public CDialogEx
 public:
 	CSPM_CameraControlDlg(CWnd* pParent = NULL);	// 标准构造函数
 
+	void WriteDataToFile(int iCameraNo);//相机数据写入文件
+
 // 对话框数据
 	enum { IDD = IDD_SPM_CAMERACONTROL_DIALOG };
 
@@ -95,9 +97,10 @@ public:
 	bool StartCamera(int index,bool bOpen);
 	void StopCamera(int index);
 
-	void WriteDataToFile(int iCameraNo);//相机数据写入文件
+	
 
 	void InitRosClient(void);//ligy 20191115 add.Ros客户端设置，设置为订阅模式
+	afx_msg void OnBnClickedButton1();
 };
 
 //extern HWND g_MainWnd;// = NULL;//对话框句柄

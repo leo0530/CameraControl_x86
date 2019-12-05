@@ -11,6 +11,21 @@
 #define new DEBUG_NEW
 #endif
 
+
+geometry_msgs::Twist twist_msg;
+//ros消息订阅回调函数
+void cmd_vel_angular_callback(const geometry_msgs::Twist & cmd_vel)
+{
+	printf("接收手机cmd_vel %f, %f, %f, %f, %f, %f\n",
+		cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z,
+		cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
+	twist_msg = cmd_vel;
+}
+ros::NodeHandle nh;
+//消息订阅
+ros::Subscriber < geometry_msgs::Twist > poseSub("cmd_vel", &cmd_vel_angular_callback);
+//消息发布
+ros::Publisher cmd_vel_pub("cmd_vel_winpc", &twist_msg);
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -54,10 +69,11 @@ VOID CALLBACK ImageDataRcv(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDAT
 	::XCCAM_ConvExec(hCamera, pImage, g_pRGBData1);
 
 	static int nFrameCnt = 0;//采集帧数
-
-	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
+	nFrameCnt++;
+	if (nFrameCnt <= FRAME_NUMS)//每个相机存储3帧图像数据
 	{
-		::PostMessage(g_hWnd,WM_SAVEIMAGE,1,NULL);
+		::SendMessage(g_hWnd,WM_SAVEIMAGE,1,NULL);
+		//pMp->WriteDataToFile(1);
 	}
 	else
 	{
@@ -78,13 +94,19 @@ VOID CALLBACK ImageDataRcv2(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDA
 
 	if (nFrameCnt++ < FRAME_NUMS)//每个相机存储3帧图像数据
 	{
-		::PostMessage(g_hWnd,WM_SAVEIMAGE,2,NULL);
+		::SendMessage(g_hWnd,WM_SAVEIMAGE,2,NULL);
+		//pMp->WriteDataToFile(2);
 	}
 	else
 	{
 		pMp->StartCamera(2,false);//停止相机2采集
-		pMp->StartCamera(3,true); //启动相机3采集
+		//pMp->StartCamera(3,true); //启动相机3采集
 		nFrameCnt = 0;//采集帧数清零，为下次采集做准备
+		if (pMp->m_FileToWrite != NULL)
+		{
+			fclose(pMp->m_FileToWrite);
+			pMp->m_FileToWrite = NULL;
+		}
 	}
  }
 
@@ -247,23 +269,11 @@ BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 	ON_WM_TIMER()
 
 //	ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
+ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
-geometry_msgs::Twist twist_msg;
-//ros消息订阅回调函数
-void cmd_vel_angular_callback(const geometry_msgs::Twist & cmd_vel)
-{
-	printf("接收手机cmd_vel %f, %f, %f, %f, %f, %f\n",
-		cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z,
-		cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
-	twist_msg = cmd_vel;
-}
-ros::NodeHandle nh;
-//消息订阅
-ros::Subscriber < geometry_msgs::Twist > poseSub("cmd_vel", &cmd_vel_angular_callback);
-//消息发布
-ros::Publisher cmd_vel_pub("cmd_vel_winpc", &twist_msg);
+
 
 // CSPM_CameraControlDlg 消息处理程序
 
@@ -309,7 +319,7 @@ BOOL CSPM_CameraControlDlg::OnInitDialog()
 	OpenCamera();//打开相机
 
 	InitRosClient();//初始化ros客户端，设置为订阅模式
-	SetTimer(2,100,NULL);
+//	SetTimer(2,100,NULL);
 
 	
 	//udpServ = new CDASocket();
@@ -1183,4 +1193,24 @@ void CSPM_CameraControlDlg::WriteDataToFile(int iCameraNo)//将相机采集到数据以二
 		int ret = fwrite(g_pRGBData8, sizeof(BYTE), g_pBitInfo8->bmiHeader.biSizeImage, m_FileToWrite);
 		fseek(m_FileToWrite,0,SEEK_END);//定位到文件尾
 	} 
+}
+
+
+void CSPM_CameraControlDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	time_t timep;
+	time(&timep);//获取时间戳
+
+	char path[512];
+	CString strTime,strPath;
+	sprintf_s(path,"d:\\%d_%d_%d.dat",timep,10,20);
+
+	TRACE("%s\n",path);
+	
+	if (m_FileToWrite == NULL)
+	{
+		m_FileToWrite = fopen(path, "w");//打开文件
+		StartCamera(1,true);//启动相机1采集
+	}
 }

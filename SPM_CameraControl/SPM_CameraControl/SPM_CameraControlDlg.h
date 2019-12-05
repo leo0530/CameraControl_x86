@@ -96,6 +96,8 @@ public:
 	void StopCamera(int index);
 
 	void WriteDataToFile(int iCameraNo);//相机数据写入文件
+
+	void InitRosClient(void);//ligy 20191115 add.Ros客户端设置，设置为订阅模式
 };
 
 //extern HWND g_MainWnd;// = NULL;//对话框句柄

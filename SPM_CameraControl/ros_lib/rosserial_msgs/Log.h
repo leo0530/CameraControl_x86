@@ -62,6 +62,6 @@ namespace rosserial_msgs
     const char * getMD5(){ return "11abd731c25933261cd6183bd12d6295"; };
 
   };
-  */
+*/
 }
 #endif

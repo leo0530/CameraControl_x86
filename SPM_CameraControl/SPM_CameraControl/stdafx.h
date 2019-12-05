@@ -37,15 +37,12 @@
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 
-//#include <string>
-//#include <stdio.h>
-//#include "ros.h"
-//#include <geometry_msgs/Twist.h>
-//#include <windows.h>
-//using namespace std;
-
-#include <WinSock2.h>
-#pragma comment (lib, "ws2_32.lib")  //加载 ws2_32.dll
+#include <string>
+#include <stdio.h>
+#include "ros.h"
+#include <geometry_msgs/Twist.h>
+#include <windows.h>
+using namespace std;
 
 //#define MY_DEBUG 1  
 #if MY_DEBUG      

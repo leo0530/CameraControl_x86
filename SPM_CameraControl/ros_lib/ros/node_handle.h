@@ -572,7 +572,7 @@ public:
   }
   void logerror(const char*msg)
   {
-    log(rosserial_msgs::Log::ERROR, msg);
+  //  log(rosserial_msgs::Log::ERROR, msg);
   }
   void logfatal(const char*msg)
   {

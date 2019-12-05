@@ -44,9 +44,7 @@ END_MESSAGE_MAP()
 // CSPM_CameraControlDlg 对话框
 
 
-bool g_bSaveImage = false;//保存图像成bmp图片
 bool g_bWriteDataToFile1 = false;
-size_t g_iDataSize = 0;
 HWND g_hWnd = NULL;
 
 VOID CALLBACK ImageDataRcv(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
@@ -252,6 +250,21 @@ BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
+geometry_msgs::Twist twist_msg;
+//ros消息订阅回调函数
+void cmd_vel_angular_callback(const geometry_msgs::Twist & cmd_vel)
+{
+	printf("接收手机cmd_vel %f, %f, %f, %f, %f, %f\n",
+		cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z,
+		cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
+	twist_msg = cmd_vel;
+}
+ros::NodeHandle nh;
+//消息订阅
+ros::Subscriber < geometry_msgs::Twist > poseSub("cmd_vel", &cmd_vel_angular_callback);
+//消息发布
+ros::Publisher cmd_vel_pub("cmd_vel_winpc", &twist_msg);
+
 // CSPM_CameraControlDlg 消息处理程序
 
 BOOL CSPM_CameraControlDlg::OnInitDialog()
@@ -295,15 +308,15 @@ BOOL CSPM_CameraControlDlg::OnInitDialog()
 
 	OpenCamera();//打开相机
 
-//	InitRosClient();//初始化ros客户端，设置为订阅模式
-//	SetTimer(2,100,NULL);
+	InitRosClient();//初始化ros客户端，设置为订阅模式
+	SetTimer(2,100,NULL);
 
 	
-	udpServ = new CDASocket();
-	if (!udpServ->Create(8888,SOCK_DGRAM))
-	{
-		printf("udp server create failure1");
-	}
+	//udpServ = new CDASocket();
+	//if (!udpServ->Create(8888,SOCK_DGRAM))
+	//{
+	//	printf("udp server create failure1");
+	//}
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -365,12 +378,13 @@ void CSPM_CameraControlDlg::OnDestroy()
 
 	// TODO: 在此处添加消息处理程序代码
 	KillTimer(2);//停止定时器
+	Sleep(500);
 	CloseCamera();//关闭相机
 
-	if (udpServ)
+	/*if (udpServ)
 	{
-		delete udpServ;
-	}
+	delete udpServ;
+	}*/
 }
 
 
@@ -570,7 +584,7 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 				
 				if(g_pRGBData1)
 					delete []g_pRGBData1;
-			//	g_iDataSize = g_pBitInfo1->bmiHeader.biSizeImage;
+			
 				g_pRGBData1 = new BYTE[g_pCamera1->GetBitmapInfo()->bmiHeader.biSizeImage];
 			}
 			else
@@ -821,7 +835,6 @@ void CSPM_CameraControlDlg::CloseCamera(void)
 void CSPM_CameraControlDlg::OnBnClickedButtonSave()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	g_bSaveImage = true;
 	g_bWriteDataToFile1 = true;
 }
 
@@ -834,11 +847,11 @@ void CSPM_CameraControlDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		::PostMessage(g_hWnd,WM_UPDATEIMAGE,NULL,NULL);
 	}*/
-	//if (nIDEvent == 2)
-	//{
-	//	//cmd_vel_pub.publish(&twist_msg);
-	//	//nh.spinOnce();
-	//}
+	if (nIDEvent == 2)
+	{
+		cmd_vel_pub.publish(&twist_msg);
+		nh.spinOnce();
+	}
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -1070,22 +1083,24 @@ void CSPM_CameraControlDlg::StopCamera(int index)
 }
 
 
-//void CSPM_CameraControlDlg::InitRosClient(void)//ligy 20191115 add.Ros客户端设置，设置为订阅模式
-//{
-//	//ros::NodeHandle nh;
-//	char *ros_master = "192.168.1.150";
-//
-//	printf("正在连接 %s\n", ros_master);
-//	nh.initNode(ros_master);
-//
-//	nh.subscribe(poseSub);
-//	printf("等待接收消息\n");
-//
-//	printf("转发cmd_vel_winpc消息 \n");
-//	
-//	nh.advertise(cmd_vel_pub);
-//	
-//}
+
+void CSPM_CameraControlDlg::InitRosClient(void)//ligy 20191115 add.Ros客户端设置，设置为订阅模式
+{
+	//ros::NodeHandle nh;
+	char *ros_master = "192.168.1.150";
+
+	printf("正在连接 %s\n", ros_master);
+	nh.initNode(ros_master);
+
+	nh.subscribe(poseSub);
+	printf("等待接收消息\n");
+
+	printf("转发cmd_vel_winpc消息 \n");
+
+
+	nh.advertise(cmd_vel_pub);
+
+}
 
 
 void CSPM_CameraControlDlg::WriteDataToFile(int iCameraNo)//将相机采集到数据以二进制形式写入文件

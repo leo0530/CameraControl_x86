@@ -112,20 +112,31 @@
     <ClInclude Include="CameraControl.h" />
     <ClInclude Include="DASocket.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ros.h" />
     <ClInclude Include="SPM_CameraControl.h" />
     <ClInclude Include="SPM_CameraControlDlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="WindowsSocket.h" />
     <ClInclude Include="XCamCtrl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraControl.cpp" />
     <ClCompile Include="DASocket.cpp" />
+    <ClCompile Include="duration.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SPM_CameraControl.cpp" />
     <ClCompile Include="SPM_CameraControlDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WindowsSocket.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="XCamCtrl.cpp" />
   </ItemGroup>

@@ -61,7 +61,7 @@ extern FILE *g_pFileImage;//图像数据写入文件
 extern bool g_bStartToWrite;///开始采集
 extern int  g_iFrmNumsIsDone;//已经写完成的帧数
 extern int  g_iImageDataWriteStatus;
-enum 
+enum CAMERA_STATUS
 {
 	CAMERA_1_WRITEDONE,//相机1写完成
 	CAMERA_2_WRITEDONE,//相机2写完成

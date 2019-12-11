@@ -12,7 +12,7 @@
 #define TIMER_CAMERA1_START 1024
 #define TIMER_CAMERA2_START 1034
 #define TIMER_CAMERA3_START 1044
-#define TIMER_PERID  1500  //定时器周期1.5s
+#define TIMER_PERID  1000  //定时器周期1.5s
 
 // CSPM_CameraControlDlg 对话框
 class CSPM_CameraControlDlg : public CDialogEx
@@ -33,8 +33,6 @@ public:
 protected:
 	HICON m_hIcon;
 
-	DWORD startTime;
-	DWORD endTime;
 	std::vector<UINT64> m_CameraInfoList;
 
 	CCameraControlDlg* m_pArrayCams[8];
@@ -58,10 +56,11 @@ public:
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
-//	CComboBox m_CameraList;
 	afx_msg void OnBnClickedButtonStart1();
-//	afx_msg void OnBnClickedButtonStart2();
+
 	// 相机操作，no 相机编号，bOpen 操作方式（false停止采集，true启动采集）
 	void doOperateCamera(int no, bool bOpen);
+
+	LRESULT OnControlCamera(WPARAM wp,LPARAM lp);//控制自定义消息，wp用于关闭相机，lp用于开启相机
 };
 

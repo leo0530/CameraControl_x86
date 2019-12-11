@@ -19,6 +19,7 @@ union FloatUnion
 
 class CGlobal
 {
+public:
 	static __int64 atoi64_t(char *arrTmp)//字符串转64位整型
 	{
 		int len = 0;

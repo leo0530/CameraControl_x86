@@ -166,6 +166,8 @@ void CCameraControlDlg::StopCap()//停止采集执行时间1000ms
 	}	
 }
 
+DWORD time1 = 0;
+DWORD time2 = 0;
 //	ImageData Call Back 15ms执行一次
 extern "C" VOID CALLBACK ImageDataRcv(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCCAM_IMAGEDATAINFO pImageInfo, PVOID Context)
 {
@@ -174,14 +176,19 @@ extern "C" VOID CALLBACK ImageDataRcv(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCC
 	if(!pMp->m_pRGBData)
 		return;
 
+	static int cnt = 0;//用于每5s存一幅图像
 
+	if (cnt++%208 != 0)//每个5s存一次,208试出来的
+	{
+		return;
+	}
+	
 	::XCCAM_ConvExec(hCamera, pImage, pMp->m_pRGBData);
+
 
 	if (g_bStartToWrite)
 	{
-	
-		g_iFrmNumsIsDone++;
-		if (g_iFrmNumsIsDone < 4)
+		if (g_iFrmNumsIsDone++ < FRAME_NUM_WRITE)//每个相机存3幅图像
 		{
 			if (!g_pFileImage)
 				return;
@@ -223,6 +230,8 @@ extern "C" VOID CALLBACK ImageDataRcv(HCAMERA hCamera, pXCCAM_IMAGE pImage, pXCC
 			{
 				g_iImageDataWriteStatus = CAMERA_8_WRITEDONE;//相机8写图像数据完毕
 			}
+
+			cnt = 0;
 		}		
 	}
 

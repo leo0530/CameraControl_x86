@@ -11,7 +11,7 @@
 #define new DEBUG_NEW
 #endif
 
-CCameraControlDlg* g_pArrayCams[8];
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -46,6 +46,9 @@ END_MESSAGE_MAP()
 
 HWND g_hWnd = NULL;
 
+
+
+
 CSPM_CameraControlDlg::CSPM_CameraControlDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CSPM_CameraControlDlg::IDD, pParent)
 {
@@ -53,7 +56,7 @@ CSPM_CameraControlDlg::CSPM_CameraControlDlg(CWnd* pParent /*=NULL*/)
 
 	for (int i=0;i<8;i++)
 	{
-		g_pArrayCams[i] = NULL;
+		m_pArrayCams[i] = NULL;
 	}
 }
 
@@ -64,20 +67,20 @@ void CSPM_CameraControlDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CSPM_CameraControlDlg, CDialogEx)
-//	ON_MESSAGE(WM_APP+1000,OnCameraOperate)
+	ON_MESSAGE(WM_APP+1000,OnControlCamera)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
-//	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CSPM_CameraControlDlg::OnBnClickedButtonSave)
 	ON_BN_CLICKED(IDC_BUTTON1, &CSPM_CameraControlDlg::OnBnClickedButton1)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_START1, &CSPM_CameraControlDlg::OnBnClickedButtonStart1)
-//	ON_BN_CLICKED(IDC_BUTTON_START2, &CSPM_CameraControlDlg::OnBnClickedButtonStart2)
 END_MESSAGE_MAP()
 
 
 // CSPM_CameraControlDlg 消息处理程序
+bool g_bRun = false;//控制线程执行
+DWORD WINAPI ThreadFunc_CameraControl(LPVOID);//相机控制线程
 
 geometry_msgs::Twist twist_msg;
 //ros消息订阅回调函数
@@ -228,7 +231,7 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 		
 		try
 		{
-			g_pArrayCams[i] = new CCameraControlDlg(m_CameraInfoList[i],i+1,this);//相机i初始化
+			m_pArrayCams[i] = new CCameraControlDlg(m_CameraInfoList[i],i+1,this);//相机i初始化
 		}
 		catch (...)
 		{
@@ -236,7 +239,7 @@ void CSPM_CameraControlDlg::OpenCamera(void)
 			return;
 		}
 	
-	 //   g_pArrayCams[i]->ShowWindow(SW_SHOW);
+	 //   m_pArrayCams[i]->ShowWindow(SW_SHOW);
 	}
 	
 }
@@ -248,13 +251,45 @@ void CSPM_CameraControlDlg::CloseCamera(void)
 	
 	for (int i = 0; i < 8; i++)
 	{
-		if (g_pArrayCams[i])
-			delete g_pArrayCams[i];
+		if (m_pArrayCams[i])
+			delete m_pArrayCams[i];
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
+DWORD startTime;
+DWORD endTime;
+DWORD WINAPI ThreadFunc_CameraControl(LPVOID p)
+{   
+	CSPM_CameraControlDlg *pDlg = (CSPM_CameraControlDlg*)p;
+	
+	while (g_bRun)
+	{
+		if (g_iImageDataWriteStatus == CAMERA_1_WRITEDONE)
+		{	
+			g_bStartToWrite = false;
+			printf("相机1写完成，相机2开始\n");	
+			pDlg->PostMessage(WM_APP+1000,1,2);//相机1停止采集，相机2开始采集
+		
+			g_iFrmNumsIsDone = 0;
+		}
+		else if (g_iImageDataWriteStatus == CAMERA_2_WRITEDONE)
+		{
+			g_bStartToWrite = false;
+			g_iFrmNumsIsDone = 0;
+			pDlg->PostMessage(WM_APP+1000,2,-1);//相机1停止采集，相机2开始采集
+			fclose(g_pFileImage);
+			printf("相机2写完成，结束\n");
+			endTime = GetTickCount();
+			printf("采集共用时%d ms",endTime-startTime);
 
-
+			g_bRun = false;//终止线程
+		}
+	}
+	
+	//printf("我是子线程， pid = %d\n", GetCurrentThreadId());   //输出子线程pid
+	return 0;
+}
 
 void CSPM_CameraControlDlg::OnBnClickedButton1()
 {
@@ -278,26 +313,15 @@ void CSPM_CameraControlDlg::OnBnClickedButton1()
 	
 	SetTimer(TIMER_CAMERA1_START,TIMER_PERID,NULL);
 
+	
+	//DWORD  threadId = 0;
+	//g_bRun = true;//开始执行
+	//HANDLE hThread = CreateThread(NULL, 0, ThreadFunc_CameraControl, this, 0, &threadId); // 创建线程
+	//CloseHandle(hThread);
+
 	printf("开始采集\n");
 }
 
- void Delay(int ms)//精确到毫秒的延时
-{
-	LARGE_INTEGER litmp;
-	LONGLONG QPart1, QPart2;
-	double dfMinus, dfFreq, dfTim;
-	QueryPerformanceFrequency(&litmp);
-	dfFreq = (double)litmp.QuadPart;// 获得计数器的时钟频率
-	QueryPerformanceCounter(&litmp);
-	QPart1 = litmp.QuadPart;// 获得初始值
-	do
-	{
-		QueryPerformanceCounter(&litmp);
-		QPart2 = litmp.QuadPart;//获得中止值
-		dfMinus = (double)(QPart2 - QPart1);
-		dfTim = dfMinus / dfFreq;// 获得对应的时间值，单位为秒
-	} while (dfTim<0.001*ms);
-}
 
 void CSPM_CameraControlDlg::OnTimer(UINT_PTR nIDEvent)
 {
@@ -374,52 +398,21 @@ void CSPM_CameraControlDlg::OnBnClickedButtonStart1()
 	CString strButtonText;
 	GetDlgItem(IDC_BUTTON_START1)->GetWindowText(strButtonText);
 
-	if(!g_pArrayCams[0])
+	if(!m_pArrayCams[0])
 		return;
 
 	if (strButtonText.Compare(_T("start1")) == 0)
 	{
 		GetDlgItem(IDC_BUTTON_START1)->SetWindowText(_T("stop1"));
 	
-		g_pArrayCams[0]->StartCap();
-		///StartCap();
+		m_pArrayCams[0]->StartCap();
 	}
 	else
 	{
 		GetDlgItem(IDC_BUTTON_START1)->SetWindowText(_T("start1"));
-		g_pArrayCams[0]->StopCap();
-		//StopCap();
+		m_pArrayCams[0]->StopCap();
 	}
 }
-
-
-//void CSPM_CameraControlDlg::OnBnClickedButtonStart2()
-//{
-//	// TODO: 在此添加控件通知处理程序代码
-//	CString strButtonText;
-//	GetDlgItem(IDC_BUTTON_START2)->GetWindowText(strButtonText);
-//
-//	if (!g_pArrayCams[1])
-//	{
-//		return;
-//	}
-//
-//	g_iFrmNumsIsDone = 0;
-//
-//	if (strButtonText.Compare(_T("start2")) == 0)
-//	{
-//		GetDlgItem(IDC_BUTTON_START2)->SetWindowText(_T("stop2"));
-//
-//		g_pArrayCams[1]->StartCap();
-//		///StartCap();
-//	}
-//	else
-//	{
-//		GetDlgItem(IDC_BUTTON_START2)->SetWindowText(_T("start2"));
-//		//StopCap();
-//		g_pArrayCams[1]->StopCap();
-//	}
-//}
 
 
 // 相机操作，no 相机编号，bOpen 操作方式（false停止采集，true启动采集）
@@ -431,11 +424,26 @@ void CSPM_CameraControlDlg::doOperateCamera(int no, bool bOpen)
 		return;
 	}
 
-	if (!g_pArrayCams[no-1])
+	if (!m_pArrayCams[no-1])
 	{
 		printf("相机未打开！");
 		return;
 	}
 
-	bOpen?g_pArrayCams[no-1]->StartCap():g_pArrayCams[no-1]->StopCap();
+	bOpen?m_pArrayCams[no-1]->StartCap():m_pArrayCams[no-1]->StopCap();
+}
+
+LRESULT  CSPM_CameraControlDlg::OnControlCamera(WPARAM wp,LPARAM lp)
+{
+	if (wp > 0)
+	{
+		doOperateCamera(wp,false);//停止采集
+	}
+
+	if (lp > 0)
+	{
+		doOperateCamera(lp,true);
+		g_bStartToWrite = true;
+	}
+	return 0;
 }

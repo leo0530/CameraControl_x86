@@ -74,8 +74,8 @@ Duration& Duration::operator-=(const Duration &rhs)
 
 Duration& Duration::operator*=(double scale)
 {
-  sec *= scale;
-  nsec *= scale;
+  sec *= (int32_t)scale;
+  nsec *= (int32_t)scale;
   normalizeSecNSecSigned(sec, nsec);
   return *this;
 }

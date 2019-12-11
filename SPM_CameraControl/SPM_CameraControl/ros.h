@@ -27,7 +27,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #define _ROS_H_
 
 #include "WindowsSocket.h"
-#include <ros/node_handle.h>
+#include "ros/node_handle.h"
 
 namespace ros
 {

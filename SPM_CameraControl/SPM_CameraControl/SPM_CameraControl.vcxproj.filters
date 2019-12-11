@@ -39,19 +39,16 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="XCamCtrl.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraControl.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DASocket.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ros.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="WindowsSocket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraControlDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CGlobal.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,15 +62,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="XCamCtrl.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraControl.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="DASocket.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="duration.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -81,6 +69,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WindowsSocket.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraControlDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

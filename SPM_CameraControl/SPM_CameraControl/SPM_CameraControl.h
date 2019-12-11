@@ -27,9 +27,6 @@ public:
 // й╣ож
 
 	DECLARE_MESSAGE_MAP()
-	bool initSocket(void);
-	void closeSocket(void);
-	virtual int ExitInstance();
 };
 
 extern CSPM_CameraControlApp theApp;

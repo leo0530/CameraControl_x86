@@ -51,9 +51,8 @@ BOOL CSPM_CameraControlApp::InitInstance()
 
 	CWinApp::InitInstance();
 
-	AfxEnableControlContainer();
 
-//	initSocket();
+	AfxEnableControlContainer();
 
 	// 创建 shell 管理器，以防对话框包含
 	// 任何 shell 树视图控件或 shell 列表视图控件。
@@ -93,43 +92,3 @@ BOOL CSPM_CameraControlApp::InitInstance()
 	return FALSE;
 }
 
-
-
-bool CSPM_CameraControlApp::initSocket(void)
-{
-	WORD wVersionRequested;
-	WSADATA wsaData;
-	int err;
-
-	wVersionRequested = MAKEWORD( 2, 2 );
-
-	err = WSAStartup( wVersionRequested, &wsaData );
-	if ( err != 0 ) {
-
-		return FALSE;
-	}
-
-
-	if ( LOBYTE( wsaData.wVersion ) != 2 ||
-		HIBYTE( wsaData.wVersion ) != 2 ) {
-
-			WSACleanup( );
-			return FALSE; 
-	}
-
-	return true;
-}
-
-
-void CSPM_CameraControlApp::closeSocket(void)
-{
-	WSACleanup( );
-}
-
-
-int CSPM_CameraControlApp::ExitInstance()
-{
-	// TODO: 在此添加专用代码和/或调用基类
-//	closeSocket();
-	return CWinApp::ExitInstance();
-}

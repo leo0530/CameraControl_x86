@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="10.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,6 +21,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -28,6 +29,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -40,18 +42,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules />
-    <CodeAnalysisRuleAssemblies />
-    <ReferencePath>$(ReferencePath)</ReferencePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules />
-    <CodeAnalysisRuleAssemblies />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -62,9 +56,8 @@
       <AdditionalIncludeDirectories>../ros_lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -109,8 +102,8 @@
     <None Include="res\SPM_CameraControl.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraControl.h" />
-    <ClInclude Include="DASocket.h" />
+    <ClInclude Include="CameraControlDlg.h" />
+    <ClInclude Include="CGlobal.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ros.h" />
     <ClInclude Include="SPM_CameraControl.h" />
@@ -118,11 +111,9 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsSocket.h" />
-    <ClInclude Include="XCamCtrl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CameraControl.cpp" />
-    <ClCompile Include="DASocket.cpp" />
+    <ClCompile Include="CameraControlDlg.cpp" />
     <ClCompile Include="duration.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -138,7 +129,6 @@
     <ClCompile Include="WindowsSocket.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="XCamCtrl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SPM_CameraControl.rc" />

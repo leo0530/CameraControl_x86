@@ -36,7 +36,6 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
-
 #include <string>
 #include <stdio.h>
 #include "ros.h"
@@ -44,21 +43,32 @@
 #include <windows.h>
 using namespace std;
 
-//#define MY_DEBUG 1  
-#if MY_DEBUG      
-#pragma comment( linker, "/subsystem:console /entry:wWinMainCRTStartup" )      
-#endif  
+#include <vector>
+#include "API\XCCamAPI.h"
+#pragma comment(lib,"XCCam.lib")
 
+#include "CGlobal.h"//公共帮助函数
 
-
-#ifdef _UNICODE
-#if defined _M_IX86
+#define Max_Buffer      5  //相机采集最大帧数
+#define FRAME_NUM_WRITE 3  //写入文件数据帧数
+//#if MY_DEBUG      
+//#pragma comment( linker, "/subsystem:console /entry:wWinMainCRTStartup" )      //调用命令行窗口
+//#endif  
+#pragma comment( linker, "/subsystem:console /entry:wWinMainCRTStartup" )    //调用命令行窗口
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#elif defined _M_X64
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#else
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
-#endif
 
-
+extern FILE *g_pFileImage;//图像数据写入文件
+extern bool g_bStartToWrite;///开始采集
+extern int  g_iFrmNumsIsDone;//已经写完成的帧数
+extern int  g_iImageDataWriteStatus;
+enum 
+{
+	CAMERA_1_WRITEDONE,//相机1写完成
+	CAMERA_2_WRITEDONE,//相机2写完成
+	CAMERA_3_WRITEDONE,//相机3写完成
+	CAMERA_4_WRITEDONE,//相机4写完成
+	CAMERA_5_WRITEDONE,//相机5写完成
+	CAMERA_6_WRITEDONE,//相机6写完成
+	CAMERA_7_WRITEDONE,//相机7写完成
+	CAMERA_8_WRITEDONE //相机8写完成
+};
